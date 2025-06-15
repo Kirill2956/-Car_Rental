@@ -50,12 +50,12 @@ APP_HOME=$(dirname "$0")
 DEFAULT_JVM_OPTS=""
 
 # Collect all arguments for the Java command.
-APP_ARGS=()
+CMD_LINE_ARGS=""
 
 # Add JVM options.
 for arg in "$@"; do
-    if [[ $arg == -D* || $arg == -X* || $arg == -javaagent* || $arg == --add-opens* || $arg == --add-exports* ]]; then
-        APP_ARGS+=("$arg")
+    if expr "$arg" : "-D.*" >/dev/null || expr "$arg" : "-X.*" >/dev/null || expr "$arg" : "-javaagent.*" >/dev/null || expr "$arg" : "--add-opens.*" >/dev/null || expr "$arg" : "--add-exports.*" >/dev/null; then
+        CMD_LINE_ARGS="$CMD_LINE_ARGS $arg"
         shift
     else
         break
@@ -63,15 +63,13 @@ for arg in "$@"; do
 done
 
 # Add Gradle-specific options.
-APP_ARGS+=("-Dorg.gradle.appname=$(basename "$0")")
-APP_ARGS+=("-classpath" "$APP_HOME/gradle/wrapper/gradle-wrapper.jar")
-APP_ARGS+=("org.gradle.wrapper.GradleWrapperMain")
+CMD_LINE_ARGS="$CMD_LINE_ARGS -Dorg.gradle.appname=$(basename "$0") -classpath "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" org.gradle.wrapper.GradleWrapperMain"
 
 # Add remaining arguments to the Java command.
-APP_ARGS+=("$@")
+CMD_LINE_ARGS="$CMD_LINE_ARGS $@"
 
 # Execute the Java command.
-exec "$JAVACMD" "${DEFAULT_JVM_OPTS[@]}" "${JAVA_OPTS[@]}" "${APP_ARGS[@]}"
+exec "$JAVACMD" $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS $CMD_LINE_ARGS
 
 # A utility function to print an error message and exit.
 die() {
